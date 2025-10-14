@@ -1,0 +1,452 @@
+/* DeckManagement.css */
+.deck-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.deck-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.deck-management-header h2 {
+  color: #333;
+  margin: 0;
+  font-size: 28px;
+}
+
+.create-deck-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.create-deck-button:hover {
+  transform: translateY(-2px);
+}
+
+.deck-management-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 30px;
+  min-height: 600px;
+}
+
+.decks-sidebar {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}
+
+.decks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.deck-item {
+  padding: 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deck-item:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.deck-item.active {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.deck-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.deck-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+}
+
+.card-count {
+  font-weight: 500;
+}
+
+.deck-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.deck-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.deck-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.study-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.study-button:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.study-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.add-card-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-card-button:hover {
+  background: #5a6fd8;
+}
+
+.deck-description {
+  color: #666;
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+.cards-section h4 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.empty-cards {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-item {
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.card-front,
+.card-back {
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.card-front strong,
+.card-back strong {
+  color: #333;
+  margin-right: 8px;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.difficulty {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.difficulty.easy {
+  background: #d4edda;
+  color: #155724;
+}
+
+.difficulty.medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.difficulty.hard {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.card-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #666;
+}
+
+.study-count,
+.accuracy {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.card-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-tags .tag {
+  background: #e9ecef;
+  color: #495057;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.no-deck-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #666;
+  font-size: 18px;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+  font-size: 18px;
+}
+
+/* Modal styles */
+.create-deck-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.create-deck-form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+}
+
+.create-deck-form .form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.create-deck-form .form-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.create-deck-form .close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.create-deck-form .close-button:hover {
+  background: #f5f5f5;
+}
+
+.create-deck-form form {
+  padding: 30px;
+}
+
+.create-deck-form .form-group {
+  margin-bottom: 20px;
+}
+
+.create-deck-form label {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.create-deck-form input,
+.create-deck-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.create-deck-form input:focus,
+.create-deck-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.create-deck-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.create-deck-form button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-deck-form button[type="button"] {
+  background: #f5f5f5;
+  color: #666;
+  border: 2px solid #e1e5e9;
+}
+
+.create-deck-form button[type="button"]:hover {
+  background: #e9ecef;
+}
+
+.create-deck-form button[type="submit"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.create-deck-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .deck-management-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .decks-sidebar {
+    order: 2;
+  }
+  
+  .deck-content {
+    order: 1;
+  }
+  
+  .deck-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .deck-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .study-button,
+  .add-card-button {
+    width: 100%;
+  }
+  
+  .card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .card-stats {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
