@@ -39,6 +39,8 @@
   grid-template-columns: 300px 1fr;
   gap: 30px;
   min-height: 600px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .decks-sidebar {
@@ -101,6 +103,13 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 30px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.deck-details {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .deck-header {
@@ -170,6 +179,11 @@
   font-style: italic;
 }
 
+.cards-section {
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .cards-section h4 {
   color: #333;
   margin-bottom: 20px;
@@ -193,27 +207,42 @@
   border-radius: 8px;
   padding: 20px;
   background: #f8f9fa;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: none;
+}
+
+.card-item * {
+  box-sizing: border-box;
 }
 
 .card-front,
 .card-back {
   margin-bottom: 12px;
   line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 14px;
+  max-width: 100%;
 }
 
 .card-front strong,
 .card-back strong {
   color: #333;
   margin-right: 8px;
+  font-size: 14px;
 }
 
 .card-meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-top: 12px;
   flex-wrap: wrap;
   gap: 10px;
+  max-width: 100%;
 }
 
 .difficulty {
@@ -244,6 +273,7 @@
   gap: 15px;
   font-size: 12px;
   color: #666;
+  flex-wrap: wrap;
 }
 
 .study-count,

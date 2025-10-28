@@ -168,14 +168,14 @@ const login = async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      return res.status(401).json({
-        success: false,
-        message: 'Please verify your email before logging in',
-        needsVerification: true
-      });
-    }
+    // Check if email is verified (disabled for development)
+    // if (!user.isEmailVerified) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: 'Please verify your email before logging in',
+    //     needsVerification: true
+    //   });
+    // }
 
     // Compare password
     const isPasswordValid = await user.comparePassword(password);

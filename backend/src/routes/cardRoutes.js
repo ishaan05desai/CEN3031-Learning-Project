@@ -19,10 +19,10 @@ router.use(authMiddleware);
 router.post('/decks', validateDeck, createDeck);
 router.get('/decks', getUserDecks);
 
-// Card routes
-router.post('/cards', validateCard, createCard);
+// Card routes - no /cards prefix since router is mounted at /api/cards
+router.post('/', validateCard, createCard);
 router.get('/decks/:deckId/cards', getCardsByDeck);
-router.put('/cards/:cardId', validateCard, updateCard);
-router.delete('/cards/:cardId', deleteCard);
+router.put('/:cardId', validateCard, updateCard);
+router.delete('/:cardId', deleteCard);
 
 module.exports = router;
