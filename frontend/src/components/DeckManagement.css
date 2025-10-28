@@ -1,8 +1,10 @@
 /* DeckManagement.css */
 .deck-management {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .deck-management-header {
@@ -40,6 +42,8 @@
   gap: 30px;
   min-height: 600px;
   max-width: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -104,12 +108,18 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 30px;
   max-width: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .deck-details {
   max-width: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .deck-header {
@@ -181,7 +191,10 @@
 
 .cards-section {
   max-width: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .cards-section h4 {
@@ -200,18 +213,23 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .card-item {
   border: 1px solid #e1e5e9;
   border-radius: 8px;
-  padding: 20px;
+  padding: 15px;
   background: #f8f9fa;
   max-width: 100%;
+  min-width: 0;
   overflow: hidden;
   box-sizing: border-box;
   width: 100%;
   max-height: none;
+  height: 120px;
 }
 
 .card-item * {
@@ -225,7 +243,8 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 14px;
-  max-width: 100%;
+  max-width: 737.5px;
+  max-height: 10%;
 }
 
 .card-front strong,
