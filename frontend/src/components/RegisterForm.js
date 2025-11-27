@@ -53,7 +53,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters long';
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)) {
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(formData.password)) {
       newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
     }
 
@@ -173,7 +173,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
                 <li className={/[A-Z]/.test(formData.password) ? 'valid' : ''}>One uppercase letter</li>
                 <li className={/[a-z]/.test(formData.password) ? 'valid' : ''}>One lowercase letter</li>
                 <li className={/\d/.test(formData.password) ? 'valid' : ''}>One number</li>
-                <li className={/[@$!%*?&]/.test(formData.password) ? 'valid' : ''}>One special character</li>
+                <li className={/[@$!%*?&#]/.test(formData.password) ? 'valid' : ''}>One special character</li>
               </ul>
             </div>
           </div>

@@ -111,6 +111,41 @@ const DeckManagement = () => {
     }
   };
 
+  const handleDeleteDeck = async () => {
+    if (!selectedDeck) return;
+
+    // Confirm deletion
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${selectedDeck.name}"? This will also delete all cards in this deck. This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/cards/decks/${selectedDeck._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Remove deck from list
+        setDecks(prev => prev.filter(deck => deck._id !== selectedDeck._id));
+        // Clear selection
+        setSelectedDeck(null);
+        setCards([]);
+      } else {
+        alert(data.message || 'Failed to delete deck');
+      }
+    } catch (error) {
+      console.error('Error deleting deck:', error);
+      alert('Failed to delete deck. Please try again.');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="deck-management">
@@ -185,6 +220,12 @@ const DeckManagement = () => {
                     onClick={() => setShowCreateCard(true)}
                   >
                     + Add Card
+                  </button>
+                  <button 
+                    className="delete-deck-button"
+                    onClick={handleDeleteDeck}
+                  >
+                    🗑️ Delete Deck
                   </button>
                 </div>
               </div>

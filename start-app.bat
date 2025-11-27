@@ -3,12 +3,12 @@ echo Starting FlashLearn Application...
 echo.
 
 echo Starting Backend Server...
-start "Backend Server" cmd /k "cd /d C:\Users\ishaa\projects\CEN3031-Learning-Project\backend && npm start"
+start "Backend Server" cmd /k "cd /d C:\Users\chieu\CEN3031-Learning-Project\backend && npm start"
 
 timeout /t 3 /nobreak >nul
 
 echo Starting Frontend Server...
-start "Frontend Server" cmd /k "cd /d C:\Users\ishaa\projects\CEN3031-Learning-Project\frontend && npm start"
+start "Frontend Server" cmd /k "cd /d C:\Users\chieu\CEN3031-Learning-Project\frontend && npm start"
 
 echo.
 echo Both servers are starting...
