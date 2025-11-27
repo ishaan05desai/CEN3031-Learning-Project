@@ -249,11 +249,47 @@ const getUserDecks = async (req, res) => {
   }
 };
 
+// Delete a deck
+const deleteDeck = async (req, res) => {
+  try {
+    const { deckId } = req.params;
+    const userId = req.user.userId;
+
+    // Verify deck exists and belongs to user
+    const deck = await Deck.findOne({ _id: deckId, createdBy: userId });
+    if (!deck) {
+      return res.status(404).json({
+        success: false,
+        message: 'Deck not found or access denied'
+      });
+    }
+
+    // Delete all cards associated with the deck
+    await Card.deleteMany({ deck: deckId });
+
+    // Delete the deck
+    await Deck.findByIdAndDelete(deckId);
+
+    res.json({
+      success: true,
+      message: 'Deck deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete deck error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createCard,
   getCardsByDeck,
   updateCard,
   deleteCard,
   createDeck,
-  getUserDecks
+  getUserDecks,
+  deleteDeck
 };

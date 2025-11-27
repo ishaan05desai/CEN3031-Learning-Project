@@ -5,7 +5,8 @@ const {
   updateCard, 
   deleteCard,
   createDeck,
-  getUserDecks
+  getUserDecks,
+  deleteDeck
 } = require('../controllers/cardController');
 const { validateCard, validateDeck } = require('../middleware/cardValidation');
 const { authMiddleware } = require('../middleware/auth');
@@ -18,6 +19,7 @@ router.use(authMiddleware);
 // Deck routes
 router.post('/decks', validateDeck, createDeck);
 router.get('/decks', getUserDecks);
+router.delete('/decks/:deckId', deleteDeck);
 
 // Card routes - no /cards prefix since router is mounted at /api/cards
 router.post('/', validateCard, createCard);

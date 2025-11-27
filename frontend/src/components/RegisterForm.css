@@ -42,11 +42,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+  width: 100%;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .form-group label {
@@ -62,6 +64,8 @@
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
