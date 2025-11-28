@@ -215,10 +215,48 @@
   box-sizing: border-box;
 }
 
+.cards-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
 .cards-section h4 {
   color: #333;
-  margin-bottom: 20px;
+  margin: 0;
   font-size: 18px;
+}
+
+.difficulty-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.difficulty-filter label {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.difficulty-filter-select {
+  padding: 8px 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.difficulty-filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .empty-cards {
@@ -248,25 +286,47 @@
   width: 100%;
   max-height: none;
   height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-item.clickable-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.card-item.clickable-card::after {
+  content: 'Click to Edit';
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 13px;
+  color: white;
+  text-decoration: underline;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-item.clickable-card:hover::after {
+  opacity: 1;
 }
 
 .card-item * {
   box-sizing: border-box;
 }
 
-.card-front,
-.card-back {
-  margin-bottom: 12px;
+.card-front {
   line-height: 1.5;
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 14px;
-  max-width: 737.5px;
-  max-height: 10%;
+  text-align: center;
+  width: 100%;
 }
 
-.card-front strong,
-.card-back strong {
+.card-front strong {
   color: #333;
   margin-right: 8px;
   font-size: 14px;

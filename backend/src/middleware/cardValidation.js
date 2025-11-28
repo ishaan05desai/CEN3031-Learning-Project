@@ -16,7 +16,7 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Card validation rules
+// Card validation rules (for creation)
 const validateCard = [
   body('front')
     .trim()
@@ -35,6 +35,41 @@ const validateCard = [
   body('deckId')
     .isMongoId()
     .withMessage('Invalid deck ID'),
+  
+  body('difficulty')
+    .optional()
+    .isIn(['easy', 'medium', 'hard'])
+    .withMessage('Difficulty must be easy, medium, or hard'),
+  
+  body('tags')
+    .optional()
+    .isArray()
+    .withMessage('Tags must be an array'),
+  
+  body('tags.*')
+    .optional()
+    .trim()
+    .isLength({ max: 20 })
+    .withMessage('Each tag cannot exceed 20 characters'),
+  
+  handleValidationErrors
+];
+
+// Card validation rules (for updates - deckId not required)
+const validateCardUpdate = [
+  body('front')
+    .trim()
+    .notEmpty()
+    .withMessage('Card front content is required')
+    .isLength({ max: 500 })
+    .withMessage('Card front cannot exceed 500 characters'),
+  
+  body('back')
+    .trim()
+    .notEmpty()
+    .withMessage('Card back content is required')
+    .isLength({ max: 500 })
+    .withMessage('Card back cannot exceed 500 characters'),
   
   body('difficulty')
     .optional()
@@ -91,6 +126,7 @@ const validateDeck = [
 
 module.exports = {
   validateCard,
+  validateCardUpdate,
   validateDeck,
   handleValidationErrors
 };

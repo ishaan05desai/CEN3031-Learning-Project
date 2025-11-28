@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import './CardCreationForm.css';
 
-const CardCreationForm = ({ deckId, onCardCreated, onCancel }) => {
+const CardCreationForm = ({ deckId, card, onCardCreated, onCardUpdated, onCancel }) => {
+  const isEditMode = !!card;
+  
   const [formData, setFormData] = useState({
-    front: '',
-    back: '',
-    difficulty: 'medium',
-    tags: []
+    front: card?.front || '',
+    back: card?.back || '',
+    difficulty: card?.difficulty || 'medium',
+    tags: card?.tags || []
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [tagInput, setTagInput] = useState('');
+
+  // Update form data when card prop changes
+  useEffect(() => {
+    if (card) {
+      setFormData({
+        front: card.front || '',
+        back: card.back || '',
+        difficulty: card.difficulty || 'medium',
+        tags: card.tags || []
+      });
+    }
+  }, [card]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,36 +93,46 @@ const CardCreationForm = ({ deckId, onCardCreated, onCancel }) => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/cards', {
-        method: 'POST',
+      const url = isEditMode 
+        ? `http://localhost:5000/api/cards/${card._id}`
+        : 'http://localhost:5000/api/cards';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+      const body = isEditMode 
+        ? { ...formData }
+        : { ...formData, deckId };
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          ...formData,
-          deckId
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        onCardCreated(data.data.card);
-        // Reset form
-        setFormData({
-          front: '',
-          back: '',
-          difficulty: 'medium',
-          tags: []
-        });
-        setTagInput('');
+        if (isEditMode && onCardUpdated) {
+          onCardUpdated(data.data.card);
+        } else if (!isEditMode && onCardCreated) {
+          onCardCreated(data.data.card);
+          // Reset form only when creating
+          setFormData({
+            front: '',
+            back: '',
+            difficulty: 'medium',
+            tags: []
+          });
+          setTagInput('');
+        }
       } else {
-        alert(data.message || 'Failed to create card');
+        alert(data.message || `Failed to ${isEditMode ? 'update' : 'create'} card`);
       }
     } catch (error) {
-      console.error('Create card error:', error);
-      alert('Failed to create card. Please try again.');
+      console.error(`${isEditMode ? 'Update' : 'Create'} card error:`, error);
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} card. Please try again.`);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +142,7 @@ const CardCreationForm = ({ deckId, onCardCreated, onCancel }) => {
     <div className="card-creation-modal">
       <div className="card-creation-form">
         <div className="form-header">
-          <h3>Create New Card</h3>
+          <h3>{isEditMode ? 'Edit Card' : 'Create New Card'}</h3>
           <button 
             type="button" 
             className="close-button"
@@ -231,7 +255,9 @@ const CardCreationForm = ({ deckId, onCardCreated, onCancel }) => {
               className="create-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Creating...' : 'Create Card'}
+              {isLoading 
+                ? (isEditMode ? 'Updating...' : 'Creating...') 
+                : (isEditMode ? 'Update Card' : 'Create Card')}
             </button>
           </div>
         </form>
