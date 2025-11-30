@@ -11,6 +11,8 @@ const DeckManagement = () => {
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [showStudySession, setShowStudySession] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
+  const [editingCard, setEditingCard] = useState(null);
 
   useEffect(() => {
     fetchDecks();
@@ -56,6 +58,7 @@ const DeckManagement = () => {
 
   const handleDeckSelect = (deck) => {
     setSelectedDeck(deck);
+    setDifficultyFilter('all'); // Reset filter when selecting a new deck
     fetchCards(deck._id);
   };
 
@@ -68,6 +71,17 @@ const DeckManagement = () => {
         ? { ...deck, cardCount: deck.cardCount + 1 }
         : deck
     ));
+  };
+
+  const handleCardUpdated = (updatedCard) => {
+    setCards(prev => prev.map(card => 
+      card._id === updatedCard._id ? updatedCard : card
+    ));
+    setEditingCard(null);
+  };
+
+  const handleCardClick = (card) => {
+    setEditingCard(card);
   };
 
   const handleCreateDeck = async (deckData) => {
@@ -235,45 +249,57 @@ const DeckManagement = () => {
               )}
 
               <div className="cards-section">
-                <h4>Cards ({cards.length})</h4>
-                {cards.length === 0 ? (
-                  <div className="empty-cards">
-                    <p>No cards in this deck yet. Add your first card!</p>
+                <div className="cards-section-header">
+                  <h4>
+                    Cards 
+                    {difficultyFilter === 'all' 
+                      ? ` (${cards.length})` 
+                      : ` (${cards.filter(card => card.difficulty === difficultyFilter).length} of ${cards.length})`}
+                  </h4>
+                  <div className="difficulty-filter">
+                    <label htmlFor="difficulty-filter">Filter by difficulty:</label>
+                    <select
+                      id="difficulty-filter"
+                      value={difficultyFilter}
+                      onChange={(e) => setDifficultyFilter(e.target.value)}
+                      className="difficulty-filter-select"
+                    >
+                      <option value="all">All Difficulties</option>
+                      <option value="easy">Easy</option>
+                      <option value="medium">Medium</option>
+                      <option value="hard">Hard</option>
+                    </select>
                   </div>
-                ) : (
-                  <div className="cards-list">
-                    {cards.map(card => (
-                      <div key={card._id} className="card-item">
-                        <div className="card-front">
-                          <strong>Front:</strong> {card.front}
-                        </div>
-                        <div className="card-back">
-                          <strong>Back:</strong> {card.back}
-                        </div>
-                        <div className="card-meta">
-                          <span className={`difficulty ${card.difficulty}`}>
-                            {card.difficulty}
-                          </span>
-                          <div className="card-stats">
-                            <span className="study-count">
-                              Studied: {card.studyCount || 0}
-                            </span>
-                            <span className="accuracy">
-                              Accuracy: {card.accuracy || 0}%
-                            </span>
+                </div>
+                {(() => {
+                  const filteredCards = difficultyFilter === 'all' 
+                    ? cards 
+                    : cards.filter(card => card.difficulty === difficultyFilter);
+                  
+                  return filteredCards.length === 0 ? (
+                    <div className="empty-cards">
+                      <p>
+                        {cards.length === 0 
+                          ? 'No cards in this deck yet. Add your first card!'
+                          : `No ${difficultyFilter} cards found. Try selecting a different difficulty.`}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="cards-list">
+                      {filteredCards.map(card => (
+                        <div 
+                          key={card._id} 
+                          className="card-item clickable-card"
+                          onClick={() => handleCardClick(card)}
+                        >
+                          <div className="card-front">
+                            <strong>Front:</strong> {card.front}
                           </div>
-                          {card.tags.length > 0 && (
-                            <div className="card-tags">
-                              {card.tags.map((tag, index) => (
-                                <span key={index} className="tag">{tag}</span>
-                              ))}
-                            </div>
-                          )}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           ) : (
@@ -289,6 +315,15 @@ const DeckManagement = () => {
           deckId={selectedDeck._id}
           onCardCreated={handleCardCreated}
           onCancel={() => setShowCreateCard(false)}
+        />
+      )}
+
+      {editingCard && selectedDeck && (
+        <CardCreationForm
+          deckId={selectedDeck._id}
+          card={editingCard}
+          onCardUpdated={handleCardUpdated}
+          onCancel={() => setEditingCard(null)}
         />
       )}
 
