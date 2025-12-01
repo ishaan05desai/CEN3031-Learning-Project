@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { createSeedDeck } = require('../utils/seedData');
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -42,6 +43,14 @@ const register = async (req, res) => {
     const verificationToken = user.generateEmailVerificationToken();
     
     await user.save();
+
+    // Create seed flashcard deck for new user
+    try {
+      await createSeedDeck(user._id);
+    } catch (seedError) {
+      // Log error but don't fail registration if seed creation fails
+      console.error('Failed to create seed deck for new user:', seedError);
+    }
 
     // Generate JWT token
     const token = generateToken(user._id);
