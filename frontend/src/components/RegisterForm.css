@@ -58,6 +58,25 @@
   font-size: 14px;
 }
 
+.label-with-counter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.password-counter {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.password-counter.valid {
+  color: #27ae60;
+  font-weight: 500;
+}
+
 .form-group input {
   padding: 12px 16px;
   border: 2px solid #e1e5e9;

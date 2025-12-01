@@ -154,7 +154,12 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password *</label>
+            <div className="label-with-counter">
+              <label htmlFor="password">Password *</label>
+              <span className={`password-counter ${formData.password.length >= 8 ? 'valid' : ''}`}>
+                {formData.password.length} {formData.password.length === 1 ? 'character' : 'characters'}
+              </span>
+            </div>
             <input
               type="password"
               id="password"
