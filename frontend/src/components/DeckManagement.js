@@ -21,7 +21,7 @@ const DeckManagement = () => {
   const fetchDecks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/cards/decks', {
+      const response = await fetch('http://localhost:5001/api/cards/decks', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -41,7 +41,7 @@ const DeckManagement = () => {
   const fetchCards = async (deckId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/cards/decks/${deckId}/cards`, {
+      const response = await fetch(`http://localhost:5001/api/cards/decks/${deckId}/cards`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -87,7 +87,7 @@ const DeckManagement = () => {
   const handleCreateDeck = async (deckData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/cards/decks', {
+      const response = await fetch('http://localhost:5001/api/cards/decks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const DeckManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/cards/decks/${selectedDeck._id}`, {
+      const response = await fetch(`http://localhost:5001/api/cards/decks/${selectedDeck._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
