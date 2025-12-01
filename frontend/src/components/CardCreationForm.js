@@ -94,8 +94,8 @@ const CardCreationForm = ({ deckId, card, onCardCreated, onCardUpdated, onCancel
     try {
       const token = localStorage.getItem('token');
       const url = isEditMode 
-        ? `http://localhost:5000/api/cards/${card._id}`
-        : 'http://localhost:5000/api/cards';
+        ? `http://localhost:5001/api/cards/${card._id}`
+        : 'http://localhost:5001/api/cards';
       
       const method = isEditMode ? 'PUT' : 'POST';
       const body = isEditMode 

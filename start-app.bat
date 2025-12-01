@@ -12,7 +12,7 @@ start "Frontend Server" cmd /k "cd /d C:\Users\chieu\CEN3031-Learning-Project\fr
 
 echo.
 echo Both servers are starting...
-echo Backend will be available at: http://localhost:5000
+echo Backend will be available at: http://localhost:5001
 echo Frontend will be available at: http://localhost:3000
 echo.
 echo Press any key to exit this window...

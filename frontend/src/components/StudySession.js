@@ -23,7 +23,7 @@ const StudySession = ({ deck, onEndSession }) => {
   const fetchCards = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/cards/decks/${deck._id}/cards`, {
+      const response = await fetch(`http://localhost:5001/api/cards/decks/${deck._id}/cards`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -79,7 +79,7 @@ const StudySession = ({ deck, onEndSession }) => {
     // Update card stats on server
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/cards/${currentCard._id}`, {
+      await fetch(`http://localhost:5001/api/cards/${currentCard._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
