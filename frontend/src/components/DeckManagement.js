@@ -10,6 +10,8 @@ const DeckManagement = () => {
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [showStudySession, setShowStudySession] = useState(false);
+  const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [editingCard, setEditingCard] = useState(null);
@@ -114,11 +116,18 @@ const DeckManagement = () => {
       alert('No cards in this deck. Add some cards first!');
       return;
     }
+    setShowDifficultyModal(true);
+  };
+
+  const handleDifficultySelected = (difficulty) => {
+    setSelectedDifficulty(difficulty);
+    setShowDifficultyModal(false);
     setShowStudySession(true);
   };
 
   const handleEndStudySession = () => {
     setShowStudySession(false);
+    setSelectedDifficulty(null);
     // Refresh cards to get updated stats
     if (selectedDeck) {
       fetchCards(selectedDeck._id);
@@ -172,6 +181,7 @@ const DeckManagement = () => {
     return (
       <StudySession 
         deck={selectedDeck}
+        difficulty={selectedDifficulty}
         onEndSession={handleEndStudySession}
       />
     );
@@ -333,6 +343,70 @@ const DeckManagement = () => {
           onCancel={() => setShowCreateDeck(false)}
         />
       )}
+
+      {showDifficultyModal && (
+        <DifficultySelectionModal
+          onSelect={handleDifficultySelected}
+          onCancel={() => setShowDifficultyModal(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Difficulty selection modal component
+const DifficultySelectionModal = ({ onSelect, onCancel }) => {
+  const handleSelect = (difficulty) => {
+    onSelect(difficulty);
+  };
+
+  return (
+    <div className="difficulty-selection-modal">
+      <div className="difficulty-selection-content">
+        <div className="modal-header">
+          <h3>Select Difficulty Level</h3>
+          <button className="close-button" onClick={onCancel}>×</button>
+        </div>
+        <div className="difficulty-options">
+          <p className="modal-description">
+            Choose which cards you'd like to study:
+          </p>
+          <div className="difficulty-buttons">
+            <button
+              className="difficulty-option all"
+              onClick={() => handleSelect(null)}
+            >
+              <div className="difficulty-icon">📚</div>
+              <div className="difficulty-label">All Cards</div>
+              <div className="difficulty-description">Study all cards in the deck</div>
+            </button>
+            <button
+              className="difficulty-option easy"
+              onClick={() => handleSelect("easy")}
+            >
+              <div className="difficulty-icon">🟢</div>
+              <div className="difficulty-label">Easy</div>
+              <div className="difficulty-description">Study easy cards only</div>
+            </button>
+            <button
+              className="difficulty-option medium"
+              onClick={() => handleSelect("medium")}
+            >
+              <div className="difficulty-icon">🟡</div>
+              <div className="difficulty-label">Medium</div>
+              <div className="difficulty-description">Study medium cards only</div>
+            </button>
+            <button
+              className="difficulty-option hard"
+              onClick={() => handleSelect("hard")}
+            >
+              <div className="difficulty-icon">🔴</div>
+              <div className="difficulty-label">Hard</div>
+              <div className="difficulty-description">Study hard cards only</div>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

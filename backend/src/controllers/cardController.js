@@ -62,6 +62,7 @@ const createCard = async (req, res) => {
 const getCardsByDeck = async (req, res) => {
   try {
     const { deckId } = req.params;
+    const { difficulty } = req.query;
     const userId = req.user.userId;
 
     // Verify deck exists and belongs to user
@@ -73,7 +74,13 @@ const getCardsByDeck = async (req, res) => {
       });
     }
 
-    const cards = await Card.find({ deck: deckId })
+    // Build query with optional difficulty filter
+    const query = { deck: deckId };
+    if (difficulty && ['easy', 'medium', 'hard'].includes(difficulty)) {
+      query.difficulty = difficulty;
+    }
+
+    const cards = await Card.find(query)
       .sort({ createdAt: -1 })
       .populate('deck', 'name');
 
