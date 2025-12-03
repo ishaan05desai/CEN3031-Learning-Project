@@ -1,24 +1,45 @@
+/**
+ * Deck Management Component
+ * 
+ * Main component for managing flashcard decks and cards.
+ * Handles deck creation, card management, and study session initiation.
+ * Supports admin view to see all user decks.
+ */
+
 import React, { useState, useEffect } from 'react';
 import CardCreationForm from './CardCreationForm';
 import StudySession from './StudySession';
 import './DeckManagement.css';
 
 const DeckManagement = () => {
+  // Deck and card state management
   const [decks, setDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [cards, setCards] = useState([]);
+  
+  // UI state for modals and forms
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [showStudySession, setShowStudySession] = useState(false);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  
+  // Study session state
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  
+  // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [editingCard, setEditingCard] = useState(null);
+  
+  // User role state
   const [isAdmin, setIsAdmin] = useState(false);
 
+  /**
+   * Initialize Component
+   * Checks user role and fetches decks on component mount
+   */
   useEffect(() => {
-    // Check if user is admin
+    // Check if user is admin from localStorage
     const userData = localStorage.getItem('user');
     if (userData) {
       try {
@@ -31,6 +52,10 @@ const DeckManagement = () => {
     fetchDecks();
   }, []);
 
+  /**
+   * Fetch All Decks
+   * Retrieves all decks for the authenticated user (or all decks if admin)
+   */
   const fetchDecks = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -51,6 +76,11 @@ const DeckManagement = () => {
     }
   };
 
+  /**
+   * Fetch Cards for Selected Deck
+   * Retrieves all cards in a specific deck
+   * @param {string} deckId - The ID of the deck to fetch cards for
+   */
   const fetchCards = async (deckId) => {
     try {
       const token = localStorage.getItem('token');

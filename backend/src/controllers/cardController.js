@@ -1,14 +1,30 @@
+/**
+ * Card Controller
+ * 
+ * Handles all flashcard and deck-related operations including:
+ * - Creating, reading, updating, and deleting cards
+ * - Creating, reading, and deleting decks
+ * - Managing card statistics and study tracking
+ */
+
 const Card = require('../models/Card');
 const Deck = require('../models/Deck');
 
-// Create a new card
+/**
+ * Create a New Card
+ * Creates a new flashcard in the specified deck
+ * Verifies deck ownership (admins can create cards in any deck)
+ * @route POST /api/cards
+ * @requires Authentication
+ */
 const createCard = async (req, res) => {
   try {
     const { front, back, deckId, difficulty, tags } = req.body;
     const userId = req.user.userId;
     const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user (or user is admin)
+    // Verify deck exists and user has permission
+    // Admins can create cards in any deck; regular users only in their own decks
     const deckQuery = isAdmin 
       ? { _id: deckId }
       : { _id: deckId, createdBy: userId };
@@ -20,7 +36,7 @@ const createCard = async (req, res) => {
       });
     }
 
-    // Create new card
+    // Create new card instance
     const card = new Card({
       front,
       back,
@@ -32,7 +48,7 @@ const createCard = async (req, res) => {
 
     await card.save();
 
-    // Update deck card count
+    // Update the deck's card count to reflect the new card
     await deck.updateCardCount();
 
     res.status(201).json({
@@ -62,7 +78,12 @@ const createCard = async (req, res) => {
   }
 };
 
-// Get all cards for a deck
+/**
+ * Get All Cards for a Deck
+ * Retrieves all cards in a deck, optionally filtered by difficulty
+ * @route GET /api/cards/decks/:deckId/cards
+ * @requires Authentication
+ */
 const getCardsByDeck = async (req, res) => {
   try {
     const { deckId } = req.params;
@@ -70,7 +91,8 @@ const getCardsByDeck = async (req, res) => {
     const userId = req.user.userId;
     const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user (or user is admin)
+    // Verify deck exists and user has permission
+    // Admins can view cards in any deck; regular users only in their own decks
     const deckQuery = isAdmin 
       ? { _id: deckId }
       : { _id: deckId, createdBy: userId };
@@ -82,7 +104,7 @@ const getCardsByDeck = async (req, res) => {
       });
     }
 
-    // Build query with optional difficulty filter
+    // Build query with optional difficulty filter from query parameters
     const query = { deck: deckId };
     if (difficulty && ['easy', 'medium', 'hard'].includes(difficulty)) {
       query.difficulty = difficulty;
@@ -204,12 +226,18 @@ const deleteCard = async (req, res) => {
   }
 };
 
-// Create a new deck
+/**
+ * Create a New Deck
+ * Creates a new flashcard deck for the authenticated user
+ * @route POST /api/cards/decks
+ * @requires Authentication
+ */
 const createDeck = async (req, res) => {
   try {
     const { name, description, isPublic, tags } = req.body;
     const userId = req.user.userId;
 
+    // Create new deck instance
     const deck = new Deck({
       name,
       description: description || '',
@@ -247,17 +275,23 @@ const createDeck = async (req, res) => {
   }
 };
 
-// Get all decks for a user (or all decks if admin)
+/**
+ * Get All Decks for User
+ * Retrieves all decks for the authenticated user
+ * Admins can see all decks from all users
+ * @route GET /api/cards/decks
+ * @requires Authentication
+ */
 const getUserDecks = async (req, res) => {
   try {
     const userId = req.user.userId;
     const isAdmin = req.user.role === 'admin';
 
-    // If admin, get all decks; otherwise get only user's decks
+    // Build query: admins see all decks, regular users see only their own
     const deckQuery = isAdmin ? {} : { createdBy: userId };
     const decks = await Deck.find(deckQuery)
-      .sort({ updatedAt: -1 })
-      .populate('createdBy', 'username email');
+      .sort({ updatedAt: -1 }) // Sort by most recently updated first
+      .populate('createdBy', 'username email'); // Include creator information
 
     res.json({
       success: true,
@@ -275,14 +309,21 @@ const getUserDecks = async (req, res) => {
   }
 };
 
-// Delete a deck
+/**
+ * Delete a Deck
+ * Deletes a deck and all associated cards (cascade delete)
+ * Verifies deck ownership before deletion
+ * @route DELETE /api/cards/decks/:deckId
+ * @requires Authentication
+ */
 const deleteDeck = async (req, res) => {
   try {
     const { deckId } = req.params;
     const userId = req.user.userId;
     const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user (or user is admin)
+    // Verify deck exists and user has permission
+    // Admins can delete any deck; regular users only their own
     const deckQuery = isAdmin 
       ? { _id: deckId }
       : { _id: deckId, createdBy: userId };
@@ -294,10 +335,10 @@ const deleteDeck = async (req, res) => {
       });
     }
 
-    // Delete all cards associated with the deck
+    // Cascade delete: Remove all cards associated with this deck
     await Card.deleteMany({ deck: deckId });
 
-    // Delete the deck
+    // Delete the deck itself
     await Deck.findByIdAndDelete(deckId);
 
     res.json({

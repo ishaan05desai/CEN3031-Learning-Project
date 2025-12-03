@@ -1,6 +1,21 @@
+/**
+ * Validation Middleware
+ * 
+ * Provides validation rules and error handling for authentication-related endpoints.
+ * Uses express-validator for input validation and sanitization.
+ */
+
 const { body, validationResult } = require('express-validator');
 
-// Validation middleware
+/**
+ * Handle Validation Errors
+ * Middleware that processes validation results and returns formatted error responses
+ * Must be called after validation rules in the middleware chain
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

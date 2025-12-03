@@ -1,14 +1,32 @@
+/**
+ * Login Form Component
+ * 
+ * Displays the user login form with email and password fields.
+ * Handles form validation and submission to authenticate users.
+ * 
+ * @param {Function} onLogin - Callback function called with form data on successful validation
+ * @param {Function} onSwitchToRegister - Callback to switch to registration view
+ * @param {Function} onForgotPassword - Callback to handle forgot password action
+ */
+
 import React, { useState } from 'react';
 import './LoginForm.css';
 
 const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
+  // Form state management
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  // Validation errors state
   const [errors, setErrors] = useState({});
+  // Loading state for form submission
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Handle Input Field Changes
+   * Updates form state and clears field-specific errors when user types
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -16,7 +34,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
       [name]: value
     }));
     
-    // Clear error when user starts typing
+    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -25,17 +43,22 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
     }
   };
 
+  /**
+   * Validate Form Input
+   * Performs client-side validation before submission
+   * @returns {boolean} True if form is valid, false otherwise
+   */
   const validateForm = () => {
     const newErrors = {};
 
-    // Email validation
+    // Email validation: required and must match email format
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
+    // Password validation: required
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }

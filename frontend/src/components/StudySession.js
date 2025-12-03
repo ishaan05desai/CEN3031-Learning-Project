@@ -1,19 +1,40 @@
+/**
+ * Study Session Component
+ * 
+ * Interactive flashcard study session with spaced repetition tracking.
+ * Displays cards one at a time, tracks user performance, and updates card statistics.
+ * 
+ * @param {Object} deck - The deck object being studied
+ * @param {string|null} difficulty - Optional difficulty filter ('easy', 'medium', 'hard', or null for all)
+ * @param {Function} onEndSession - Callback to exit the study session
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import './StudySession.css';
 
 const StudySession = ({ deck, difficulty, onEndSession }) => {
+  // Card and session state
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  // Session statistics tracking
   const [sessionStats, setSessionStats] = useState({
     totalCards: 0,
     studiedCards: 0,
     correctAnswers: 0,
     incorrectAnswers: 0
   });
+  
+  // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [sessionComplete, setSessionComplete] = useState(false);
 
+  /**
+   * Fetch Cards for Study Session
+   * Retrieves cards from the deck, optionally filtered by difficulty
+   * Shuffles cards for randomized study order
+   */
   const fetchCards = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
@@ -31,7 +52,7 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
 
       const data = await response.json();
       if (data.success && data.data.cards.length > 0) {
-        // Shuffle cards for study session
+        // Shuffle cards for randomized study session
         const shuffledCards = shuffleArray([...data.data.cards]);
         setCards(shuffledCards);
         setSessionStats(prev => ({
@@ -39,6 +60,7 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
           totalCards: shuffledCards.length
         }));
       } else {
+        // No cards found - show message and exit
         const difficultyText = difficulty 
           ? `${difficulty} ` 
           : "";
@@ -53,12 +75,19 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
     }
   }, [deck, difficulty, onEndSession]);
 
+  // Fetch cards when component mounts or deck changes
   useEffect(() => {
     if (deck) {
       fetchCards();
     }
   }, [deck, fetchCards]);
 
+  /**
+   * Shuffle Array
+   * Randomly shuffles an array using Fisher-Yates algorithm
+   * @param {Array} array - The array to shuffle
+   * @returns {Array} A new shuffled array
+   */
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -74,10 +103,16 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
     }
   };
 
+  /**
+   * Handle Answer Submission
+   * Records whether the user answered correctly and updates card statistics
+   * Moves to the next card or ends the session if all cards are studied
+   * @param {boolean} isCorrect - Whether the user answered correctly
+   */
   const handleAnswer = async (isCorrect) => {
     const currentCard = cards[currentCardIndex];
     
-    // Update session stats
+    // Update local session statistics
     setSessionStats(prev => ({
       ...prev,
       studiedCards: prev.studiedCards + 1,
@@ -85,7 +120,7 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
       incorrectAnswers: isCorrect ? prev.incorrectAnswers : prev.incorrectAnswers + 1
     }));
 
-    // Update card stats on server
+    // Update card statistics on the server for spaced repetition tracking
     try {
       const token = localStorage.getItem('token');
       await fetch(`http://localhost:5001/api/cards/${currentCard._id}`, {
@@ -102,12 +137,13 @@ const StudySession = ({ deck, difficulty, onEndSession }) => {
       });
     } catch (error) {
       console.error('Error updating card stats:', error);
+      // Continue even if update fails - don't interrupt study session
     }
 
-    // Move to next card or end session
+    // Move to next card or end session if all cards are studied
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex(prev => prev + 1);
-      setIsFlipped(false);
+      setIsFlipped(false); // Reset flip state for next card
     } else {
       setSessionComplete(true);
     }

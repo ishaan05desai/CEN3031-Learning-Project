@@ -1,20 +1,40 @@
+/**
+ * Authentication Controller
+ * 
+ * Handles all authentication-related operations including:
+ * - User registration and email verification
+ * - User login and JWT token generation
+ * - Password reset and change functionality
+ * - User profile management
+ */
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { createSeedDeck } = require('../utils/seedData');
 
-// Generate JWT token
+/**
+ * Generate JWT Token
+ * Creates a JSON Web Token for user authentication
+ * @param {string} userId - The user's MongoDB ObjectId
+ * @returns {string} JWT token string
+ */
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   });
 };
 
-// Register new user
+/**
+ * Register New User
+ * Creates a new user account with email verification
+ * Automatically creates a seed deck for new users
+ * @route POST /api/auth/register
+ */
 const register = async (req, res) => {
   try {
     const { username, email, password, firstName, lastName, role } = req.body;
 
-    // Check if user already exists
+    // Check if user already exists (by email or username)
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     });
@@ -28,10 +48,10 @@ const register = async (req, res) => {
       });
     }
 
-    // Validate role if provided
+    // Validate and sanitize role - default to 'user' if invalid
     const validRole = role && ['user', 'admin'].includes(role) ? role : 'user';
 
-    // Create new user
+    // Create new user instance
     const user = new User({
       username,
       email,
@@ -43,23 +63,26 @@ const register = async (req, res) => {
       }
     });
 
-    // Generate email verification token
+    // Generate email verification token (24-hour expiration)
     const verificationToken = user.generateEmailVerificationToken();
     
+    // Save user to database (password will be hashed by pre-save middleware)
     await user.save();
 
-    // Create seed flashcard deck for new user
+    // Create seed flashcard deck for new user to help them get started
     try {
       await createSeedDeck(user._id);
     } catch (seedError) {
       // Log error but don't fail registration if seed creation fails
+      // This ensures registration succeeds even if seed deck creation has issues
       console.error('Failed to create seed deck for new user:', seedError);
     }
 
-    // Generate JWT token
+    // Generate JWT token for immediate authentication
     const token = generateToken(user._id);
 
     // TODO: Send verification email (implement email service)
+    // For now, log the token for development purposes
     console.log(`Email verification token for ${email}: ${verificationToken}`);
 
     res.status(201).json({
@@ -90,11 +113,16 @@ const register = async (req, res) => {
   }
 };
 
-// Verify email
+/**
+ * Verify Email Address
+ * Verifies a user's email address using the verification token
+ * @route GET /api/auth/verify/:token
+ */
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.params;
 
+    // Find user with matching token that hasn't expired
     const user = await User.findOne({
       emailVerificationToken: token,
       emailVerificationExpires: { $gt: Date.now() }
@@ -107,6 +135,7 @@ const verifyEmail = async (req, res) => {
       });
     }
 
+    // Mark email as verified and clear verification token fields
     user.isEmailVerified = true;
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
@@ -166,22 +195,28 @@ const resendVerification = async (req, res) => {
   }
 };
 
-// Login user
+/**
+ * Login User
+ * Authenticates a user and returns a JWT token
+ * @route POST /api/auth/login
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
+    // Find user by email and include password field (normally excluded)
     const user = await User.findOne({ email }).select('+password');
     
     if (!user) {
+      // Return generic message to prevent user enumeration
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
-    // Check if email is verified (disabled for development)
+    // Email verification check (currently disabled for development)
+    // In production, uncomment this to require email verification before login
     // if (!user.isEmailVerified) {
     //   return res.status(401).json({
     //     success: false,
@@ -190,20 +225,21 @@ const login = async (req, res) => {
     //   });
     // }
 
-    // Compare password
+    // Verify password using bcrypt comparison
     const isPasswordValid = await user.comparePassword(password);
     
     if (!isPasswordValid) {
+      // Return generic message to prevent user enumeration
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
-    // Generate JWT token
+    // Generate JWT token for authenticated session
     const token = generateToken(user._id);
 
-    // Update last login (optional)
+    // Update last login timestamp (optional tracking)
     user.lastLoginAt = new Date();
     await user.save();
 
@@ -225,9 +261,15 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user profile
+/**
+ * Get Current User Profile
+ * Returns the authenticated user's profile information
+ * @route GET /api/auth/profile
+ * @requires Authentication
+ */
 const getProfile = async (req, res) => {
   try {
+    // req.user.userId is set by authMiddleware after JWT verification
     const user = await User.findById(req.user.userId);
     
     if (!user) {
@@ -292,7 +334,12 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// Request password reset
+/**
+ * Request Password Reset
+ * Generates a password reset token and sends it via email
+ * Returns success message even if email doesn't exist (security best practice)
+ * @route POST /api/auth/request-password-reset
+ */
 const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
@@ -300,18 +347,20 @@ const requestPasswordReset = async (req, res) => {
     const user = await User.findOne({ email });
     
     if (!user) {
-      // Don't reveal if email exists or not for security
+      // Don't reveal if email exists or not for security (prevents user enumeration)
+      // Always return success message regardless of whether user exists
       return res.json({
         success: true,
         message: 'If the email exists, a password reset link has been sent'
       });
     }
 
-    // Generate password reset token
+    // Generate password reset token (expires in 1 hour)
     const resetToken = user.generatePasswordResetToken();
     await user.save();
 
-    // TODO: Send password reset email
+    // TODO: Send password reset email with reset link
+    // For now, log the token for development purposes
     console.log(`Password reset token for ${email}: ${resetToken}`);
 
     res.json({

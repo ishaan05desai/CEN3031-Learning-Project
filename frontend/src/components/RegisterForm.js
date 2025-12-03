@@ -1,7 +1,18 @@
+/**
+ * Registration Form Component
+ * 
+ * Displays the user registration form with comprehensive validation.
+ * Handles user account creation with password strength requirements.
+ * 
+ * @param {Function} onRegister - Callback function called with form data on successful validation
+ * @param {Function} onSwitchToLogin - Callback to switch to login view
+ */
+
 import React, { useState } from 'react';
 import './RegisterForm.css';
 
 const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
+  // Form state management
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -11,7 +22,9 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
     lastName: '',
     role: 'user'
   });
+  // Validation errors state
   const [errors, setErrors] = useState({});
+  // Loading state for form submission
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -30,10 +43,19 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
     }
   };
 
+  /**
+   * Validate Form Input
+   * Performs comprehensive client-side validation including:
+   * - Username format and length
+   * - Email format
+   * - Password strength requirements
+   * - Password confirmation match
+   * @returns {boolean} True if form is valid, false otherwise
+   */
   const validateForm = () => {
     const newErrors = {};
 
-    // Username validation
+    // Username validation: required, min 3 chars, alphanumeric + underscores only
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
     } else if (formData.username.length < 3) {
@@ -42,14 +64,14 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
       newErrors.username = 'Username can only contain letters, numbers, and underscores';
     }
 
-    // Email validation
+    // Email validation: required and must match email format
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
+    // Password validation: required, min 8 chars, must contain uppercase, lowercase, number, and special char
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
@@ -58,7 +80,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
       newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
     }
 
-    // Confirm password validation
+    // Confirm password validation: must match password
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {

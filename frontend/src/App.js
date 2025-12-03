@@ -1,3 +1,13 @@
+/**
+ * FlashLearn Main Application Component
+ * 
+ * Root component that manages application state and routing between:
+ * - Authentication views (Login/Register)
+ * - Main application view (Deck Management)
+ * 
+ * Handles user authentication state and localStorage persistence.
+ */
+
 import React, { useState } from 'react';
 import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
@@ -5,9 +15,16 @@ import DeckManagement from './components/DeckManagement';
 import './App.css';
 
 function App() {
+  // State for managing login/register view toggle
   const [isLoginMode, setIsLoginMode] = useState(true);
+  // State for authenticated user information
   const [user, setUser] = useState(null);
 
+  /**
+   * Handle User Registration
+   * Sends registration request to backend API
+   * @param {Object} formData - User registration data (username, email, password, etc.)
+   */
   const handleRegister = async (formData) => {
     try {
       const response = await fetch('http://localhost:5001/api/auth/register', {
@@ -22,7 +39,8 @@ function App() {
 
       if (data.success) {
         alert('Registration successful! Please check your email for verification.');
-        setIsLoginMode(true); // Switch to login after successful registration
+        // Switch to login view after successful registration
+        setIsLoginMode(true);
       } else {
         alert(data.message || 'Registration failed');
       }
@@ -32,6 +50,11 @@ function App() {
     }
   };
 
+  /**
+   * Handle User Login
+   * Authenticates user and stores JWT token in localStorage
+   * @param {Object} formData - Login credentials (email, password)
+   */
   const handleLogin = async (formData) => {
     try {
       const response = await fetch('http://localhost:5001/api/auth/login', {
@@ -45,13 +68,14 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        // Store token and user data
+        // Store authentication token and user data in localStorage for persistence
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
         setUser(data.data.user);
         alert('Login successful! Welcome to FlashLearn.');
         // TODO: Redirect to dashboard
       } else {
+        // Handle specific error cases
         if (data.needsVerification) {
           alert('Please verify your email before logging in.');
         } else {
@@ -64,12 +88,20 @@ function App() {
     }
   };
 
+  /**
+   * Handle User Logout
+   * Clears authentication data from localStorage and resets user state
+   */
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
   };
 
+  /**
+   * Handle Forgot Password Request
+   * Placeholder for password reset functionality
+   */
   const handleForgotPassword = () => {
     const email = prompt('Enter your email address:');
     if (email) {
@@ -86,15 +118,21 @@ function App() {
     setIsLoginMode(false);
   };
 
-  // Check if user is already logged in
+  /**
+   * Check for Existing Authentication on Component Mount
+   * Restores user session from localStorage if token exists
+   * This allows users to stay logged in after page refresh
+   */
   React.useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     
     if (token && userData) {
       try {
+        // Restore user state from localStorage
         setUser(JSON.parse(userData));
       } catch (error) {
+        // If data is corrupted, clear it and require re-login
         console.error('Error parsing user data:', error);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
