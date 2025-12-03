@@ -109,7 +109,20 @@ function App() {
         <p>Master your studies with intelligent flashcards</p>
         {user && (
           <div className="user-info">
-            <span>Welcome, {user.username}!</span>
+            <span>
+              Welcome, {user.username}!
+              {user.role === 'admin' && (
+                <span style={{
+                  marginLeft: '8px',
+                  padding: '2px 8px',
+                  backgroundColor: '#ff6b6b',
+                  color: 'white',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: 'bold'
+                }}>ADMIN</span>
+              )}
+            </span>
             <button onClick={handleLogout} className="logout-button">
               Logout
             </button>

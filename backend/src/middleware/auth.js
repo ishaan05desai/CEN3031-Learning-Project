@@ -24,8 +24,11 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Add user info to request
-    req.user = decoded;
+    // Add user info to request (including role)
+    req.user = {
+      userId: decoded.userId,
+      role: user.role
+    };
     next();
     
   } catch (error) {
@@ -52,6 +55,17 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+const adminMiddleware = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin privileges required.'
+    });
+  }
+  next();
+};
+
 module.exports = {
-  authMiddleware
+  authMiddleware,
+  adminMiddleware
 };
