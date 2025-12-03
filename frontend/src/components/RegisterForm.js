@@ -8,7 +8,8 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
     password: '',
     confirmPassword: '',
     firstName: '',
-    lastName: ''
+    lastName: '',
+    role: 'user'
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -196,6 +197,23 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
               required
             />
             {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="role">Account Type *</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={errors.role ? 'error' : ''}
+              required
+            >
+              <option value="user">Normal User</option>
+              <option value="admin">Admin</option>
+            </select>
+            {errors.role && <span className="error-message">{errors.role}</span>}
+            <small className="form-hint">Select your account type. Admins can access all user decks.</small>
           </div>
 
           <button 

@@ -15,8 +15,19 @@ const DeckManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [editingCard, setEditingCard] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // Check if user is admin
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setIsAdmin(user.role === 'admin');
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
     fetchDecks();
   }, []);
 
@@ -190,7 +201,21 @@ const DeckManagement = () => {
   return (
     <div className="deck-management">
       <div className="deck-management-header">
-        <h2>My Decks</h2>
+        <div>
+          <h2>{isAdmin ? 'All User Decks' : 'My Decks'}</h2>
+          {isAdmin && (
+            <span className="admin-badge" style={{
+              display: 'inline-block',
+              marginLeft: '10px',
+              padding: '4px 12px',
+              backgroundColor: '#ff6b6b',
+              color: 'white',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>ADMIN</span>
+          )}
+        </div>
         <button 
           className="create-deck-button"
           onClick={() => setShowCreateDeck(true)}
@@ -213,7 +238,20 @@ const DeckManagement = () => {
                   className={`deck-item ${selectedDeck?._id === deck._id ? 'active' : ''}`}
                   onClick={() => handleDeckSelect(deck)}
                 >
-                  <div className="deck-name">{deck.name}</div>
+                  <div className="deck-name">
+                    {deck.name}
+                    {isAdmin && deck.createdBy && (
+                      <span style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        color: '#666',
+                        marginTop: '4px',
+                        fontWeight: 'normal'
+                      }}>
+                        by {deck.createdBy.username || deck.createdBy.email}
+                      </span>
+                    )}
+                  </div>
                   <div className="deck-meta">
                     <span className="card-count">{deck.cardCount} cards</span>
                     <span className="deck-date">
@@ -230,7 +268,14 @@ const DeckManagement = () => {
           {selectedDeck ? (
             <div className="deck-details">
               <div className="deck-header">
-                <h3>{selectedDeck.name}</h3>
+                <div>
+                  <h3>{selectedDeck.name}</h3>
+                  {isAdmin && selectedDeck.createdBy && (
+                    <p style={{ margin: '4px 0', fontSize: '14px', color: '#666' }}>
+                      Created by: {selectedDeck.createdBy.username || selectedDeck.createdBy.email}
+                    </p>
+                  )}
+                </div>
                 <div className="deck-actions">
                   <button 
                     className="study-button"

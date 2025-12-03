@@ -6,9 +6,13 @@ const createCard = async (req, res) => {
   try {
     const { front, back, deckId, difficulty, tags } = req.body;
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user
-    const deck = await Deck.findOne({ _id: deckId, createdBy: userId });
+    // Verify deck exists and belongs to user (or user is admin)
+    const deckQuery = isAdmin 
+      ? { _id: deckId }
+      : { _id: deckId, createdBy: userId };
+    const deck = await Deck.findOne(deckQuery);
     if (!deck) {
       return res.status(404).json({
         success: false,
@@ -64,9 +68,13 @@ const getCardsByDeck = async (req, res) => {
     const { deckId } = req.params;
     const { difficulty } = req.query;
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user
-    const deck = await Deck.findOne({ _id: deckId, createdBy: userId });
+    // Verify deck exists and belongs to user (or user is admin)
+    const deckQuery = isAdmin 
+      ? { _id: deckId }
+      : { _id: deckId, createdBy: userId };
+    const deck = await Deck.findOne(deckQuery);
     if (!deck) {
       return res.status(404).json({
         success: false,
@@ -107,8 +115,12 @@ const updateCard = async (req, res) => {
     const { cardId } = req.params;
     const { front, back, difficulty, tags } = req.body;
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    const card = await Card.findOne({ _id: cardId, createdBy: userId });
+    const cardQuery = isAdmin 
+      ? { _id: cardId }
+      : { _id: cardId, createdBy: userId };
+    const card = await Card.findOne(cardQuery);
     if (!card) {
       return res.status(404).json({
         success: false,
@@ -156,8 +168,12 @@ const deleteCard = async (req, res) => {
   try {
     const { cardId } = req.params;
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    const card = await Card.findOne({ _id: cardId, createdBy: userId });
+    const cardQuery = isAdmin 
+      ? { _id: cardId }
+      : { _id: cardId, createdBy: userId };
+    const card = await Card.findOne(cardQuery);
     if (!card) {
       return res.status(404).json({
         success: false,
@@ -231,14 +247,17 @@ const createDeck = async (req, res) => {
   }
 };
 
-// Get all decks for a user
+// Get all decks for a user (or all decks if admin)
 const getUserDecks = async (req, res) => {
   try {
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    const decks = await Deck.find({ createdBy: userId })
+    // If admin, get all decks; otherwise get only user's decks
+    const deckQuery = isAdmin ? {} : { createdBy: userId };
+    const decks = await Deck.find(deckQuery)
       .sort({ updatedAt: -1 })
-      .populate('createdBy', 'username');
+      .populate('createdBy', 'username email');
 
     res.json({
       success: true,
@@ -261,9 +280,13 @@ const deleteDeck = async (req, res) => {
   try {
     const { deckId } = req.params;
     const userId = req.user.userId;
+    const isAdmin = req.user.role === 'admin';
 
-    // Verify deck exists and belongs to user
-    const deck = await Deck.findOne({ _id: deckId, createdBy: userId });
+    // Verify deck exists and belongs to user (or user is admin)
+    const deckQuery = isAdmin 
+      ? { _id: deckId }
+      : { _id: deckId, createdBy: userId };
+    const deck = await Deck.findOne(deckQuery);
     if (!deck) {
       return res.status(404).json({
         success: false,

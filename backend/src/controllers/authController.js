@@ -12,7 +12,7 @@ const generateToken = (userId) => {
 // Register new user
 const register = async (req, res) => {
   try {
-    const { username, email, password, firstName, lastName } = req.body;
+    const { username, email, password, firstName, lastName, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({
@@ -28,11 +28,15 @@ const register = async (req, res) => {
       });
     }
 
+    // Validate role if provided
+    const validRole = role && ['user', 'admin'].includes(role) ? role : 'user';
+
     // Create new user
     const user = new User({
       username,
       email,
       password,
+      role: validRole,
       profile: {
         firstName: firstName || '',
         lastName: lastName || ''
