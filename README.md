@@ -30,7 +30,7 @@ FlashLearn is a full-stack web application that allows users to:
 
 ## Getting Started
 
-1. Install MongoDB (see setup instructions above)
+1. Install MongoDB (see setup instructions above in setup-instructions.bat)
 2. Clone the repository
 3. Install dependencies:
 
