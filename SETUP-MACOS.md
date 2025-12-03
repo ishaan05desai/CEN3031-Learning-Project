@@ -55,7 +55,7 @@ You have two options for installing MongoDB on macOS:
    brew services stop mongodb-community
    ```
 
-**MongoDB will automatically start on system boot when installed via Homebrew.**
+**MongoDB will automatically start on system boot when installed via Homebrew. After this you can move to step 2**
 
 ---
 
@@ -171,7 +171,7 @@ You have two options for installing MongoDB on macOS:
    cp env.example .env
    ```
 
-4. **Edit the .env file:**
+4. **Edit the .env file. (for local nothing needs to be done server just needs to be started):**
 
    ```bash
    # For local MongoDB (default):
@@ -180,13 +180,6 @@ You have two options for installing MongoDB on macOS:
 
    # For MongoDB Atlas, use your connection string:
    # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/flashlearn
-   ```
-
-5. **Set JWT secret (important for production):**
-   ```bash
-   # Generate a secure random string
-   openssl rand -base64 32
-   # Add the output to JWT_SECRET in .env
    ```
 
 ---
