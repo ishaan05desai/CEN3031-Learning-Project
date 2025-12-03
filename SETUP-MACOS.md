@@ -165,6 +165,12 @@ You have two options for installing MongoDB on macOS:
    npm install
    ```
 
+2.5. **Fix permissions (if needed):**
+
+```bash
+chmod +x node_modules/.bin/*
+```
+
 3. **Set up environment variables:**
 
    ```bash
