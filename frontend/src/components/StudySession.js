@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './StudySession.css';
 
-const StudySession = ({ deck, onEndSession }) => {
+const StudySession = ({ deck, difficulty, onEndSession }) => {
   const [cards, setCards] = useState([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -14,16 +14,16 @@ const StudySession = ({ deck, onEndSession }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [sessionComplete, setSessionComplete] = useState(false);
 
-  useEffect(() => {
-    if (deck) {
-      fetchCards();
-    }
-  }, [deck]);
-
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5001/api/cards/decks/${deck._id}/cards`, {
+      // Build URL with optional difficulty query parameter
+      let url = `http://localhost:5001/api/cards/decks/${deck._id}/cards`;
+      if (difficulty) {
+        url += `?difficulty=${difficulty}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -39,7 +39,10 @@ const StudySession = ({ deck, onEndSession }) => {
           totalCards: shuffledCards.length
         }));
       } else {
-        alert('No cards found in this deck. Add some cards first!');
+        const difficultyText = difficulty 
+          ? `${difficulty} ` 
+          : "";
+        alert(`No ${difficultyText}cards found in this deck. Add some cards first!`);
         onEndSession();
       }
     } catch (error) {
@@ -48,7 +51,13 @@ const StudySession = ({ deck, onEndSession }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [deck, difficulty, onEndSession]);
+
+  useEffect(() => {
+    if (deck) {
+      fetchCards();
+    }
+  }, [deck, fetchCards]);
 
   const shuffleArray = (array) => {
     const shuffled = [...array];
