@@ -9,6 +9,7 @@ echo.
 echo    Option A - Local MongoDB:
 echo    - Install MongoDB from: https://www.mongodb.com/try/download/community
 echo    - Start MongoDB service: net start MongoDB
+echo    - MAKE SURE YOU RUN THE ABOVE ^ AS AN ADMINISTRATOR IN COMMAND PROMPT
 echo    - Or run: mongod
 echo.
 echo    Option B - MongoDB Atlas (Cloud - Recommended):
