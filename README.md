@@ -44,7 +44,7 @@ FlashLearn is a full-stack web application that allows users to:
    npm install
    ```
 
-4. Configure environment variables (see `backend/env.example`)
+4. Configure environment variables (create a .env file and copy/paste contents of `backend/env.example` into it)
 5. Start the servers:
 
    ```bash
