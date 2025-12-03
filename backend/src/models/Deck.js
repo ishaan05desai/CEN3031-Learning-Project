@@ -1,5 +1,13 @@
+/**
+ * Deck Model
+ * 
+ * Defines the schema for flashcard deck collections in the FlashLearn application.
+ * Decks contain multiple cards and can be public or private.
+ */
+
 const mongoose = require('mongoose');
 
+// Deck schema definition with validation rules
 const deckSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -48,15 +56,22 @@ const deckSchema = new mongoose.Schema({
   }
 });
 
-// Update updatedAt field before saving
+// Pre-save Middleware: Update Timestamp
+// Automatically updates the updatedAt field whenever the deck is saved
 deckSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// Update card count when cards are added/removed
+/**
+ * Update Card Count
+ * Recalculates and updates the cardCount field based on actual cards in the deck
+ * This ensures the count stays accurate when cards are added or removed
+ * @returns {Promise<void>}
+ */
 deckSchema.methods.updateCardCount = async function() {
   const Card = mongoose.model('Card');
+  // Count all cards that belong to this deck
   this.cardCount = await Card.countDocuments({ deck: this._id });
   await this.save();
 };

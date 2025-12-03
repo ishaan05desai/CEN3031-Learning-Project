@@ -1,14 +1,25 @@
+/**
+ * Seed Data Utility
+ * 
+ * Provides functionality to create sample data for new users.
+ * Creates a welcome deck with educational flashcards about learning techniques.
+ */
+
 const Deck = require('../models/Deck');
 const Card = require('../models/Card');
 
 /**
- * Creates a seed flashcard deck with sample cards for a new user
- * @param {String} userId - The ID of the user to create the deck for
- * @returns {Promise<Object>} The created deck
+ * Creates a Seed Flashcard Deck
+ * 
+ * Automatically creates a "Getting Started" deck with sample educational cards
+ * when a new user registers. This helps users understand how to use the app.
+ * 
+ * @param {String} userId - The MongoDB ObjectId of the user to create the deck for
+ * @returns {Promise<Object>} The created deck object
  */
 const createSeedDeck = async (userId) => {
   try {
-    // Create the seed deck
+    // Create the seed deck with welcome information
     const deck = new Deck({
       name: 'Getting Started',
       description: 'Welcome to FlashLearn! This is a sample deck to help you get started. Feel free to edit or delete these cards.',
@@ -19,7 +30,7 @@ const createSeedDeck = async (userId) => {
 
     await deck.save();
 
-    // Define seed cards
+    // Define seed cards with educational content about learning techniques
     const seedCards = [
       {
         front: 'What is spaced repetition?',
@@ -53,7 +64,7 @@ const createSeedDeck = async (userId) => {
       }
     ];
 
-    // Create all seed cards
+    // Create all seed cards using the card data
     const cards = seedCards.map(cardData => ({
       front: cardData.front,
       back: cardData.back,
@@ -63,9 +74,10 @@ const createSeedDeck = async (userId) => {
       tags: cardData.tags
     }));
 
+    // Insert all cards in a single database operation for efficiency
     await Card.insertMany(cards);
 
-    // Update deck card count
+    // Update the deck's card count to reflect the newly created cards
     await deck.updateCardCount();
 
     console.log(`Seed deck created for user ${userId} with ${seedCards.length} cards`);

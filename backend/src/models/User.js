@@ -1,7 +1,15 @@
+/**
+ * User Model
+ * 
+ * Defines the schema and methods for user accounts in the FlashLearn application.
+ * Handles user authentication, email verification, password management, and profile data.
+ */
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
+// User schema definition with validation rules
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -25,7 +33,8 @@ const userSchema = new mongoose.Schema({
     minlength: [8, 'Password must be at least 8 characters long'],
     validate: {
       validator: function(password) {
-        // Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character
+        // Password validation: must contain uppercase, lowercase, number, and special character
+        // This regex ensures strong password requirements for security
         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(password);
       },
       message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
@@ -95,7 +104,10 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Hash password before saving
+// Pre-save Middleware: Hash Password
+// Automatically hashes the password before saving to the database
+// Only hashes if the password field has been modified (not on every save)
+// Uses bcrypt with salt rounds of 12 for strong security
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
@@ -108,36 +120,60 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Update updatedAt field before saving
+// Pre-save Middleware: Update Timestamp
+// Automatically updates the updatedAt field whenever the document is saved
 userSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// Generate email verification token
+/**
+ * Generate Email Verification Token
+ * Creates a cryptographically secure random token for email verification
+ * Token expires after 24 hours
+ * @returns {string} The generated verification token
+ */
 userSchema.methods.generateEmailVerificationToken = function() {
   const token = crypto.randomBytes(32).toString('hex');
   this.emailVerificationToken = token;
-  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  // Set expiration to 24 hours from now
+  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000;
   return token;
 };
 
-// Generate password reset token
+/**
+ * Generate Password Reset Token
+ * Creates a cryptographically secure random token for password reset
+ * Token expires after 1 hour for security
+ * @returns {string} The generated reset token
+ */
 userSchema.methods.generatePasswordResetToken = function() {
   const token = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = token;
-  this.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  // Set expiration to 1 hour from now
+  this.passwordResetExpires = Date.now() + 60 * 60 * 1000;
   return token;
 };
 
-// Compare password method
+/**
+ * Compare Password
+ * Verifies a candidate password against the stored hashed password
+ * @param {string} candidatePassword - The password to verify
+ * @returns {Promise<boolean>} True if password matches, false otherwise
+ */
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Remove sensitive data when converting to JSON
+/**
+ * Remove Sensitive Data from JSON Output
+ * Overrides the default toJSON method to exclude sensitive fields
+ * Prevents password and tokens from being sent in API responses
+ * @returns {Object} User object without sensitive data
+ */
 userSchema.methods.toJSON = function() {
   const userObject = this.toObject();
+  // Remove sensitive fields before sending to client
   delete userObject.password;
   delete userObject.emailVerificationToken;
   delete userObject.passwordResetToken;

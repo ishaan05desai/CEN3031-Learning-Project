@@ -1,17 +1,35 @@
+/**
+ * Card Creation/Edit Form Component
+ * 
+ * Modal form for creating new flashcards or editing existing ones.
+ * Supports card front/back content, difficulty levels, and tags.
+ * 
+ * @param {string} deckId - The ID of the deck this card belongs to
+ * @param {Object} card - Card object if editing, undefined if creating new
+ * @param {Function} onCardCreated - Callback when a new card is created
+ * @param {Function} onCardUpdated - Callback when an existing card is updated
+ * @param {Function} onCancel - Callback to close the form
+ */
+
 import React, { useState, useEffect } from 'react';
 import './CardCreationForm.css';
 
 const CardCreationForm = ({ deckId, card, onCardCreated, onCardUpdated, onCancel }) => {
+  // Determine if we're in edit mode based on whether card prop exists
   const isEditMode = !!card;
   
+  // Form state management
   const [formData, setFormData] = useState({
     front: card?.front || '',
     back: card?.back || '',
     difficulty: card?.difficulty || 'medium',
     tags: card?.tags || []
   });
+  // Validation errors state
   const [errors, setErrors] = useState({});
+  // Loading state for form submission
   const [isLoading, setIsLoading] = useState(false);
+  // Input state for adding new tags
   const [tagInput, setTagInput] = useState('');
 
   // Update form data when card prop changes
