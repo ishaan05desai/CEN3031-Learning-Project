@@ -59,12 +59,3 @@ FlashLearn is a full-stack web application that allows users to:
 
 6. Open http://localhost:3000 in your browser
 
-## Documentation
-
-- **API Documentation**: See `docs/API.md`
-- **Deployment Guide**: See `docs/DEPLOYMENT.md`
-- **macOS Setup**: See `SETUP-MACOS.md`
-
-## License
-
-MIT
